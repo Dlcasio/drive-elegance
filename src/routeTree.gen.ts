@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as InventoryRouteImport } from './routes/inventory'
@@ -21,6 +22,11 @@ import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
 import { Route as DashboardWishlistRouteImport } from './routes/dashboard.wishlist'
 import { Route as CarsCarIdRouteImport } from './routes/cars.$carId'
 
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cars/$carId': typeof CarsCarIdRoute
   '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -98,6 +105,7 @@ export interface FileRoutesByTo {
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cars/$carId': typeof CarsCarIdRoute
   '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -112,6 +120,7 @@ export interface FileRoutesById {
   '/inventory': typeof InventoryRoute
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
   '/cars/$carId': typeof CarsCarIdRoute
   '/dashboard/wishlist': typeof DashboardWishlistRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/login'
     | '/register'
+    | '/sitemap.xml'
     | '/cars/$carId'
     | '/dashboard/wishlist'
     | '/dashboard/'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/login'
     | '/register'
+    | '/sitemap.xml'
     | '/cars/$carId'
     | '/dashboard/wishlist'
     | '/dashboard'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/login'
     | '/register'
+    | '/sitemap.xml'
     | '/cars/$carId'
     | '/dashboard/wishlist'
     | '/dashboard/'
@@ -166,11 +178,19 @@ export interface RootRouteChildren {
   InventoryRoute: typeof InventoryRoute
   LoginRoute: typeof LoginRoute
   RegisterRoute: typeof RegisterRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   CarsCarIdRoute: typeof CarsCarIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -274,8 +294,19 @@ const rootRouteChildren: RootRouteChildren = {
   InventoryRoute: InventoryRoute,
   LoginRoute: LoginRoute,
   RegisterRoute: RegisterRoute,
+  SitemapDotxmlRoute: SitemapDotxmlRoute,
   CarsCarIdRoute: CarsCarIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
